@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<configuration>
+	<enviroments default="sample_id">
+		<enviroment id="sample_id">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://localhost/test" />
+				<property name="username" value="test" />
+				<property name="password" value="test" />
+			</dataSource>
+		</enviroment>
+
+	</enviroments>
+
+	<mappers>
+		<mapper resource="sample_mapper.xml"/>
+	</mappers>
+
+</configuration>

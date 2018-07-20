@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jsonパラメータ受け渡しのサンプル</title>
+
+<!--[if lt IE 9]>
+<script type="text/javascript" src="./js/jquery-1.11.2.js"></script>
+<![endif]-->
+<!--[if gte IE 9]><!-->
+<script type="text/javascript" src="./js/jquery-2.2.3.js"></script>
+<!--<![endif]-->
+
+<script type="text/javascript"src="./js/Chart.js"></script>
+
+<script type="text/javascript">
+<!--
+$(function(){
+	/ドーナツグラフ用データ
+    var DoughnutChartData;
+/***********************************
+//以下は、ドーナツグラフ用サンプルデータフォーマットです。
+//Java側で、このフォーマットのJSON文字列を生成します。
+var DoughnutChartData = {
+    labels: [
+        "Red",
+        "Green",
+        "Yellow"
+    ],
+    datasets: [
+        {
+            data: [300, 50, 100],
+            backgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56"
+            ],
+            hoverBackgroundColor: [
+                "#FF6384",
+                "#36A2EB",
+                "#FFCE56"
+            ]
+        }]
+};
+***********************************/
+
+    //ドーナツグラフグラフサイズ設定
+    $("#DoughnutCanvas").width(300);
+    $("#DoughnutCanvas").height(300);
+
+    //ドーナツグラフのインスタンスを作成する
+    var ctxDoughnut = $("#DoughnutCanvas")[0].getContext("2d");
+    myDoughnutChart = null; //ドーナツグラフオブジェクト
+
+    //グラフデータリクエストAjaxの実行
+    //category : 画面で選択されたセレクトボックスの値
+    var postRequest = function (category) {
+        //分類パラメータをJSONオブジェクト化する
+        var reqparam = {
+            "category" : category
+        };
+
+      //Ajaxを実行する(Over 1.8系)
+        $.ajax({
+            url          : "./doughnutchartdraw.xhtml",         //実行するサーブレット
+            dataType: "json",       //サーバから返却されるデータの型(xml, html, json, jsonp, text ...
+            type       : "post",        //post, get
+            data      : JSON.stringify(reqparam),   //JSON形式
+        }).done(function(resData) {     //callback data:response
+            //resDataにドーナツグラフ描画情報がJSON形式で返却されてくる
+            drawDoughnutChart(resData); //グラフ描画
+        }).fail(function(resData) {
+            console.log("faild resData["+JSON.stringify(resData,null,' ')+"]");
+        });
+    }
+
+  //ドーナツグラフの描画Callback
+    //response:Ajaxで返却されたグラフデータ(JSON)
+    var drawDoughnutChart = function(response) {
+        //ドーナツグラフを一旦destroy
+        if(myDoughnutChart != null) myDoughnutChart.destroy();
+
+        //Chartインスタンスを作り直し
+        //ドーナツグラフの再描画
+        myDoughnutChart = new Chart(ctxDoughnut,{
+            type: 'doughnut',
+            data: response      //ドーナツグラフデータをセットする
+        });
+    }
+
+    //グラフ描画ボタンクリック時
+    $("#draw").click(function(){
+        //セレクトボックス値を取得
+        var category = $("#category").val();
+        //グラフ描画Ajax実行
+        postRequest(category);
+    });
+
+});
+//-->
+</script>
+</head>
+<body>
+<form>
+<table>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <span style="font-weight:bold;color:blue;">■Spring-MVCの@RestControllerアノテーションでJSON形式パラメータを扱うサンプル</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        JSON形式のデータを受け取ってドーナツグラフを描画するサンプルHTMLです。<br/>
+                    </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>
+                        グラフを描画する分類を選択してください。<br />
+                        <br />
+                        <select id="category">
+                            <option value="0">果物の数のグラフ</option>
+                            <option value="1">肉類の数のグラフ</option>
+                        </select>
+                        <input id="draw" type="button" value="グラフを描画" />
+                    </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="text-align:left;">
+                            <!-- グラフ描画キャンバス -->
+                            <canvas id="DoughnutCanvas"></canvas>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</form>
+</body>
+</html>
+
