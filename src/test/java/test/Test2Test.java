@@ -1,13 +1,14 @@
 package test;
 
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.*;
 
+import org.junit.Test;
 
 public class Test2Test {
 
 	@Test
 	public void myFirstTest() {
-		assertEquals(2,1+1);
+		assertThat(2,1+1);
 
 	}
 
